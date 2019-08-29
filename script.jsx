@@ -6,10 +6,21 @@ class List extends React.Component {
       word:"",
       validation: '',
       list : [],
-      doneList: []
+      doneList: [],
+      curTime: '',
+      red: ''
 
     }
   }
+
+  componentWillMount(){
+        setInterval(function(){
+            this.setState({
+                curTime: new Date().toLocaleString()
+            })
+        }.bind(this), 1000);
+        console.log(this.state.curTime)
+    }
 
   addItem(){
     console.log(this.state.word.length)
@@ -89,7 +100,7 @@ class List extends React.Component {
                     <div className='col-6 text-right'>
                         <button className = 'btn btn-sm btn-outline-success'onClick={(event)=>{this.doneTodo(event)}} value={list} >Completed</button>
                     </div>
-                    <p>Posted at: {moment().format("MMMM Do YYYY, h:mm:ss a")}</p>
+                    <p>Posted at: {moment().format("LTS")}</p>
                 </div>
             </div>
             )
@@ -104,7 +115,7 @@ class List extends React.Component {
                     <div className='col-6 text-right'>
                         <button className='btn btn-sm btn-outline-danger'onClick={(event)=>{this.deleteTodo(event)}} value={doneList} >Delete Item</button>
                     </div>
-                    <p>Completed at: {moment().format("MMMM Do YYYY, h:mm:ss a")}</p>
+                    <p>Completed at: {moment().format("LTS")}</p>
                 </div>
             </div>
             )
@@ -114,20 +125,30 @@ class List extends React.Component {
         <div className='container'>
             <div className= "header">
                 <div className="card-header text-center">
-                    <h2>Todo List</h2>
-                    <p>{this.state.validation}</p>
+                    <div className='row'>
+                        <div className='col-4'></div>
+                        <div className='col-4'>
+                            <h2>Todo List</h2>
+                        </div>
+                        <div className='col-4 text-right'>
+                            <p>{this.state.curTime}</p>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div className="header form-inline">
                 <div className="col-8 offset-2 text-center">
-                  <input className='form-control' onChange={(event)=>{this.changeHandler(event)}} onKeyDown={(event)=>{this.changeHandler(event)}} value={this.state.word} placeholder={'What is your todo list?'}/>
-                  <button className= 'btn btn-outline-primary'onClick={(event)=>{this.addItem(event)}} onKeyDown={(event)=>{this.addItem(event)}} value={this.state.word} >add item</button>
+                    <input style = {{backgroundColor: this.state.red}} className='form-control' onChange={(event)=>{this.changeHandler(event)}} onKeyDown={(event)=>{this.changeHandler(event)}} value={this.state.word} placeholder={'What is your todo list?'}/>
+
+                    <button className= 'btn btn-outline-primary'onClick={(event)=>{this.addItem(event)}} onKeyDown={(event)=>{this.addItem(event)}} value={this.state.word} >add item</button>
+                        <p>{this.state.validation}</p>
                 </div>
             </div>
             <div className='row'>
                 <div className='col-6'>
                     <h6 className='card-header'>Todo Pending</h6>
                     <div className='card-body'>
+                        <p>Click 'Completed' when complete</p>
                         {list}
                     </div>
                 </div>
