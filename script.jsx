@@ -89,6 +89,7 @@ class List extends React.Component {
                     <div className='col-6 text-right'>
                         <button className = 'btn btn-sm btn-outline-success'onClick={(event)=>{this.doneTodo(event)}} value={list} >Completed</button>
                     </div>
+                    <p>Posted at: {moment().format("h:mm:ss a")}</p>
                 </div>
             </div>
             )
@@ -103,6 +104,7 @@ class List extends React.Component {
                     <div className='col-6 text-right'>
                         <button className='btn btn-sm btn-outline-danger'onClick={(event)=>{this.deleteTodo(event)}} value={doneList} >Delete Item</button>
                     </div>
+                    <p>Completed at: {moment().format("h:mm:ss a")}</p>
                 </div>
             </div>
             )
@@ -124,13 +126,13 @@ class List extends React.Component {
             </div>
             <div className='row'>
                 <div className='col-6'>
-                    <h6 className='card-header'>Pending</h6>
+                    <h6 className='card-header'>Todo Pending</h6>
                     <div className='card-body'>
                         {list}
                     </div>
                 </div>
                 <div className='col-6'>
-                    <h6 className='card-header'>Completed</h6>
+                    <h6 className='card-header'>Todo Completed</h6>
                     <div className='card-body'>
                         {doneList}
                     </div>
