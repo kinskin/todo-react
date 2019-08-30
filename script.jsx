@@ -1,3 +1,28 @@
+class Clock extends React.Component{
+    constructor(){
+        super()
+
+        this.state = {
+            curTime: ''
+        }
+    }
+    componentWillMount(){
+        setInterval(function(){
+            this.setState({
+                curTime: new Date().toLocaleString()
+            })
+        }.bind(this), 1000);
+        console.log(this.state.curTime)
+    }
+    render(){
+        return(
+            <div>
+                <p>{this.state.curTime}</p>
+            </div>
+        )
+    }
+}
+
 class List extends React.Component {
   constructor(){
     super()
@@ -7,20 +32,10 @@ class List extends React.Component {
       validation: '',
       list : [],
       doneList: [],
-      curTime: '',
       red: ''
 
     }
   }
-
-  componentWillMount(){
-        setInterval(function(){
-            this.setState({
-                curTime: new Date().toLocaleString()
-            })
-        }.bind(this), 1000);
-        console.log(this.state.curTime)
-    }
 
   addItem(){
     console.log(this.state.word.length)
@@ -131,7 +146,7 @@ class List extends React.Component {
                             <h2>Todo List</h2>
                         </div>
                         <div className='col-4 text-right'>
-                            <p>{this.state.curTime}</p>
+                            <Clock />
                         </div>
                     </div>
                 </div>
