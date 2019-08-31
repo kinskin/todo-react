@@ -23,19 +23,20 @@ class Clock extends React.Component{
     }
 }
 
+
 class List extends React.Component {
-  constructor(){
-    super()
+    constructor(){
+        super();
 
-    this.state = {
-      word:"",
-      validation: '',
-      list : [],
-      doneList: [],
-      red: ''
-
+        this.state = {
+          word:"",
+          validation: '',
+          list : [],
+          doneList: [],
+          red: ''
+        }
     }
-  }
+
 
   addItem(){
     console.log(this.state.word.length)
@@ -100,11 +101,10 @@ class List extends React.Component {
             else{
                 this.setState({word: word})
             // }
-        }
+            }
   }
 
   render() {
-      // render the list with a map() here
       let list = this.state.list.map((list)=>{
         return(
             <div>
@@ -119,7 +119,7 @@ class List extends React.Component {
                 </div>
             </div>
             )
-      })
+      });
       let doneList = this.state.doneList.map((doneList)=>{
         return(
             <div>
@@ -136,6 +136,7 @@ class List extends React.Component {
             )
       })
       console.log("rendering");
+
       return (
         <div className='container'>
             <div className= "header">
@@ -153,9 +154,9 @@ class List extends React.Component {
             </div>
             <div className="header form-inline">
                 <div className="col-8 offset-2 text-center">
-                    <input style = {{backgroundColor: this.state.red}} className='form-control' onChange={(event)=>{this.changeHandler(event)}} onKeyDown={(event)=>{this.changeHandler(event)}} value={this.state.word} placeholder={'What is your todo list?'}/>
+                    <input style = {{backgroundColor: this.state.red}} className="form-control" placeholder="What is your todo list?" onChange={(event)=>{this.changeHandler(event)}} onKeyDown={(event)=>{this.changeHandler(event)}} value={this.state.word} />
 
-                    <button className= 'btn btn-outline-primary'onClick={(event)=>{this.addItem(event)}} onKeyDown={(event)=>{this.addItem(event)}} value={this.state.word} >add item</button>
+                    <button className="btn btn-outline-primary" onClick={(event)=>{this.addItem(event)}} onKeyDown={(event)=>{this.addItem(event)}} value={this.state.word} >add item</button>
                         <p>{this.state.validation}</p>
                 </div>
             </div>
@@ -176,8 +177,8 @@ class List extends React.Component {
             </div>
         </div>
       );
+    }
   }
-}
 
 ReactDOM.render(
     <List/>,
