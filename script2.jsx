@@ -1,4 +1,61 @@
+class EditList extends React.Component{
 
+    constructor(){
+        super()
+
+        this.state={
+            value:'',
+            id:'',
+            validation:''
+        }
+    }
+
+    editTodo(){
+        let value = this.state.value
+        console.log(value)
+        let id = this.state.id
+        let validation = this.state.validation
+        let display = document.getElementById(id)
+        if(value.length > 1 && value.length < 100){
+            this.props.editTodo(value,id)
+            display.style.display = 'none'
+            this.setState({value:'',validation: ''})
+        }
+        else if(value.length <= 1){
+            validation = 'To do item is too short'
+            this.setState({validation: validation})
+        }
+        else if(value.length >= 100){
+            validation = 'To do item is too long'
+            this.setState({validation: validation})
+        }
+
+    }
+
+    changeHandler(event){
+        if(event.keyCode===13){
+            this.setState({value: event.target.value, id: this.props.id})
+            this.editTodo()
+        }
+        else{
+            this.setState({value: event.target.value, id: this.props.id})
+        }
+
+    }
+
+
+
+    render(){
+        return(
+            <div id={this.props.id} style={{display: 'none'}}>
+                <input onChange={(event)=>{this.changeHandler(event)}} onKeyDown={(event)=>{this.changeHandler(event)}} value={this.state.value}/>
+                <button onClick={()=>{this.editTodo()}}>Edit</button>
+                <p>{this.state.validation}</p>
+            </div>
+
+        )
+    }
+}
 
 class Clock extends React.Component{
     constructor(){
@@ -64,27 +121,61 @@ class DoneList extends React.Component{
 
 class PendingList extends React.Component{
 
-    editPending(){
-        console.log(event.target.innerText)
+    constructor(){
+        super()
+
+        this.state={
+            display:'none',
+            id: ''
+        }
+    }
+
+    showEdit(value,id){
+        this.props.showEdit(value,id)
+    }
+
+
+    showInput(event,todoIndex){
+        console.log(todoIndex)
+        let id = this.state.id
+        let display = this.state.display
+        let inputId = document.getElementById(todoIndex)
+        console.log(inputId.style.display === 'none')
+        if(inputId.style.display === 'none'){
+            inputId.style.display = ''
+            this.setState({display: ''})
+        }
+        else{
+            inputId.style.display = 'none'
+            this.setState({display: 'none'})
+        }
+
     }
 
     removePending(){
-        let value = event.target.value
+        let value = event.target.value;
         this.props.removePending(value)
     }
 
 
     render(){
+
         let pendingTodos = this.props.pendingTodo.map((pendingTodo,index)=>{
             return(
-                <div className='row' key={index}>
-                    <div className='col-9'>
-                        <p>{pendingTodo}</p>
+                <div>
+                    <div className='row form-inline' key={index}>
+                        <div className='col-6'>
+                            <p>{pendingTodo}</p>
+                        </div>
+                        <div className='col-3 text-right'>
+                            <button onClick={(event)=>{this.showInput(event,index)}}>Edit</button>
+                        </div>
+                        <div className='col-3 text-right'>
+                            <button className='btn btn-sm btn-outline-success' onClick={(event)=>{this.removePending(event)}} value={index}>Completed</button>
+                        </div>
+                        <p>Posted at: {this.props.createdAt[index]}</p>
                     </div>
-                    <div className='col-3 text-right'>
-                        <button className='btn btn-sm btn-outline-success' onClick={(event)=>{this.removePending(event)}} value={index}>Completed</button>
-                    </div>
-                    <p>Created at: {moment().format("LTS")}</p>
+                    <EditList id={index} editTodo={(value,id)=>{this.showEdit(value,id)}}/>
                 </div>
             )
         })
@@ -108,17 +199,18 @@ class Form extends React.Component{
 
         this.state={
             value:'',
-            validation: ''
+            validation: '',
+            createdAt:''
         }
     }
 
     addTodo(){
         let value = this.state.value
+        let createdAt = this.state.createdAt
         let validation = this.state.validation
         if(value.length > 1 && value.length < 100){
-            console.log('sending data to Todo class receiveHandler method')
-            this.props.addTodo(value)
-            this.setState({value:'',validation: ''})
+            this.props.addTodo(value,createdAt)
+            this.setState({value:'',validation: '',createdAt: ''})
         }
         else if(value.length <= 1){
             validation = 'To do item is too short'
@@ -133,11 +225,11 @@ class Form extends React.Component{
     changeHandler(){
         let todo = event.target.value
         if(event.keyCode === 13){
-            this.setState({value: todo})
+            this.setState({value: todo, createdAt: moment().format("LTS")})
             this.addTodo()
         }
         else{
-            this.setState({value: todo})
+            this.setState({value: todo, createdAt: moment().format("LTS")})
         }
     }
 
@@ -163,8 +255,18 @@ class Todo extends React.Component{
 
         this.state={
             pendingList:[],
-            doneList:[]
+            doneList:[],
+            createdAt: []
         }
+    }
+
+    editTodo(value,id){
+        console.log('this is in the todo class')
+        console.log('this is the value: ', value)
+        console.log('this is the id: ', id)
+        let pendingList = this.state.pendingList
+        pendingList[id] = value
+        this.setState({pendingList: pendingList})
     }
 
     deleteTodo(value){
@@ -182,10 +284,12 @@ class Todo extends React.Component{
 
     }
 
-    receiveHandler(value){
+    receiveHandler(value, newCreatedAt){
         let pendingList = this.state.pendingList
+        let createdAt = this.state.createdAt
         pendingList.push(value)
-        this.setState({pendingList: pendingList})
+        createdAt.push(newCreatedAt)
+        this.setState({pendingList: pendingList, createdAt: createdAt})
 
     }
 
@@ -198,11 +302,11 @@ class Todo extends React.Component{
                     <Clock />
                 </div>
                 <div className='col-8 offset-2'>
-                    <Form addTodo={(event)=>{this.receiveHandler(event)}}/>
+                    <Form addTodo={(event,createdAt)=>{this.receiveHandler(event,createdAt)}}/>
                 </div>
                 <div className = 'row'>
                     <div className = 'col-6'>
-                        <PendingList removePending={(event)=>{this.completedTodo(event)}} pendingTodo={this.state.pendingList}/>
+                        <PendingList removePending={(event)=>{this.completedTodo(event)}} showEdit={(value,id)=>{this.editTodo(value,id)}}pendingTodo={this.state.pendingList} createdAt={this.state.createdAt}/>
                     </div>
                     <div className='col-6'>
                         <DoneList removeDone={(event)=>{this.deleteTodo(event)}} doneTodo={this.state.doneList}/>
