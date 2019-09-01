@@ -47,9 +47,9 @@ class EditList extends React.Component{
 
     render(){
         return(
-            <div id={this.props.id} style={{display: 'none'}}>
-                <input onChange={(event)=>{this.changeHandler(event)}} onKeyDown={(event)=>{this.changeHandler(event)}} value={this.state.value}/>
-                <button onClick={()=>{this.editTodo()}}>Edit</button>
+            <div className='header form-inline' id={this.props.id}  style={{display: 'none'}}>
+                <input className= 'form-control' onChange={(event)=>{this.changeHandler(event)}} onKeyDown={(event)=>{this.changeHandler(event)}} value={this.state.value}/>
+                <button className='btn btn-outline-success' onClick={()=>{this.editTodo()}}>Edit</button>
                 <p>{this.state.validation}</p>
             </div>
 
@@ -101,7 +101,7 @@ class DoneList extends React.Component{
                     <div className='col-3 text-right'>
                         <button className='btn btn-sm btn-outline-danger' onClick={(event)=>{this.removeDone(event)}} value={index}>Delete</button>
                     </div>
-                    <p>Completed at: {moment().format("LTS")}</p>
+                    <p>Completed at: {this.props.completedAt[index]}</p>
                 </div>
             )
         })
@@ -154,7 +154,8 @@ class PendingList extends React.Component{
 
     removePending(){
         let value = event.target.value;
-        this.props.removePending(value)
+        let time = moment().format("LTS")
+        this.props.removePending(value,time)
     }
 
 
@@ -168,14 +169,14 @@ class PendingList extends React.Component{
                             <p>{pendingTodo}</p>
                         </div>
                         <div className='col-3 text-right'>
-                            <button onClick={(event)=>{this.showInput(event,index)}}>Edit</button>
+                            <button className='btn btn-outline-warning' onClick={(event)=>{this.showInput(event,index)}}>Edit</button>
                         </div>
                         <div className='col-3 text-right'>
                             <button className='btn btn-sm btn-outline-success' onClick={(event)=>{this.removePending(event)}} value={index}>Completed</button>
                         </div>
-                        <p>Posted at: {this.props.createdAt[index]}</p>
                     </div>
                     <EditList id={index} editTodo={(value,id)=>{this.showEdit(value,id)}}/>
+                    <p>Posted at: {this.props.createdAt[index]}</p>
                 </div>
             )
         })
@@ -256,7 +257,8 @@ class Todo extends React.Component{
         this.state={
             pendingList:[],
             doneList:[],
-            createdAt: []
+            createdAt: [],
+            completedAt:[]
         }
     }
 
@@ -271,16 +273,22 @@ class Todo extends React.Component{
 
     deleteTodo(value){
         let doneList = this.state.doneList
+        let completeAt = this.state.completeAt
         doneList.splice(value,1)
-        this.setState({doneList: doneList})
+        completeAt.splice(value,1)
+        this.setState({doneList: doneList,completedAt: completedAt})
     }
 
-    completedTodo(value){
+    completedTodo(value,time){
         let pendingList = this.state.pendingList
+        let createdAt = this.state.createdAt
         let doneList = this.state.doneList
+        let completedAt = this.state.completedAt
         let newDoneList = pendingList.splice(value,1)
         doneList.push(newDoneList[0])
-        this.setState({pendingList: pendingList, doneList: doneList})
+        createdAt.splice(value,1)
+        completedAt.push(time)
+        this.setState({pendingList: pendingList, doneList: doneList, createdAt: createdAt, completedAt: completedAt})
 
     }
 
@@ -306,10 +314,10 @@ class Todo extends React.Component{
                 </div>
                 <div className = 'row'>
                     <div className = 'col-6'>
-                        <PendingList removePending={(event)=>{this.completedTodo(event)}} showEdit={(value,id)=>{this.editTodo(value,id)}}pendingTodo={this.state.pendingList} createdAt={this.state.createdAt}/>
+                        <PendingList removePending={(event,time)=>{this.completedTodo(event,time)}} showEdit={(value,id)=>{this.editTodo(value,id)}}pendingTodo={this.state.pendingList} createdAt={this.state.createdAt}/>
                     </div>
                     <div className='col-6'>
-                        <DoneList removeDone={(event)=>{this.deleteTodo(event)}} doneTodo={this.state.doneList}/>
+                        <DoneList removeDone={(event)=>{this.deleteTodo(event)}} doneTodo={this.state.doneList} completedAt={this.state.completedAt}/>
                     </div>
                 </div>
             </div>
